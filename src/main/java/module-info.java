@@ -1,8 +1,8 @@
-module com.example.tictacserver {
+module server {
     requires javafx.controls;
     requires javafx.fxml;
-
-
-    opens com.example.tictacserver to javafx.fxml;
-    exports com.example.tictacserver;
+    requires java.sql;
+    requires org.kordamp.bootstrapfx.core;
+    opens com.example.server to javafx.fxml;
+    exports com.example.server;
 }
