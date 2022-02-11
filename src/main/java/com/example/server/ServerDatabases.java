@@ -1,6 +1,8 @@
 package com.example.server;
 import java.sql.*;
 
+
+
 public class ServerDatabases {
     Connection conn ;
     ResultSet player_rs;
@@ -22,8 +24,9 @@ public class ServerDatabases {
             statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             return statement.executeQuery("SELECT * FROM Players");
         } catch (SQLException ex) {
-            return null;
+            this.player_rs= null;
         }
+        return null ;
     }
     public ResultSet rsGetMatches(){
         Statement statement;
@@ -43,44 +46,30 @@ public class ServerDatabases {
             return null;
         }
     }
+
+    //using prepared statement
     public boolean logIn(String username, String password) throws SQLException{
-        player_rs = rsGetPlayers();
-        player_rs.first();
-        boolean flage = true ;
-        while(flage){
-            if(player_rs.getString(1)==username && player_rs.getString(2)==password){
-                System.out.println("Player Exists");
-                break;
-            }
-            else if(player_rs.isLast()){
-                flage =false ;
-                System.out.println("Player does not Exist and needs to sign up");
-                break;
-            }
-            else{
-                player_rs.next();
-            }
+        PreparedStatement preSt = this.conn.prepareStatement("SELECT username, password FROM Players WHERE username= ? AND password= ?");
+        preSt.setString(1,username);preSt.setString(2,password);
+        ResultSet results = preSt.executeQuery();
+        if(results.next()){
+            if(username.equals(results.getString(1)) && password.equals(results.getString(2)))
+                return true;
+            else
+                return false;
         }
-        return flage;
+        else
+            return false;
     }
-    public void sigUp(String username, String password) throws SQLException{
-        player_rs = rsGetPlayers();
-        player_rs.first();
-        boolean flage = true ;
-        while(flage){
-            if(player_rs.getString(1)==username && player_rs.getString(1)==password){
-                System.out.println("Player Exists");
-                break;
-            }
-            else if(player_rs.isLast()){
-                flage =false ;
-                System.out.println("Player does not Exist and needs to sign up");
-                break;
-            }
-            else{
-                player_rs.next();
-            }
-        }
+    //using prepared statement
+    public boolean sigUp(String username, String password) throws SQLException{
+        PreparedStatement preSt = this.conn.prepareStatement("INSERT INTO Players (username, password) VALUES (?,?)");
+        preSt.setString(1,username);preSt.setString(2,password);
+        int results = preSt.executeUpdate();
+        if(results ==1)
+            return true ;
+        else
+            return false;
     }
 
 
