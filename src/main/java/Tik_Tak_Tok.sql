@@ -1,7 +1,6 @@
--- drop database tik_tak_tok;
 
-create database tik_tak_tok;
-use tik_tak_tok;
+create database xo_db;
+use xo_db;
   
   create table game
 (
