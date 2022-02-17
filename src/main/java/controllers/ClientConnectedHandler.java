@@ -27,7 +27,7 @@ public class ClientConnectedHandler extends Thread {
     private int clientConnectedID;
     public ClientConnectedHandler(Socket clientSocket) {
         try {
-            //in this try connection is established successfuly
+            //in this try connection is established successfully
             dataInputStream = new DataInputStream(clientSocket.getInputStream());
             dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
             //adding this client to clients vector with its socket
@@ -39,7 +39,53 @@ public class ClientConnectedHandler extends Thread {
             close(dataInputStream, dataOutputStream);
         }
     }
+    public void run(){
+        running = true ;
+        while (running){
+            try {
+                String str = dataInputStream.readUTF();
+                JsonObject request = JsonParser.parseString(str).getAsJsonObject();
+                String type = request.get("type").getAsString();
+                JsonObject response = new JsonObject();
+                ClientConnectedHandler opponent ;
+                int opponentId ;
+                Game game ;
+                //-------------------------------------------------------------------
+                switch(type){
+                    case "login":
+                        break;
+                    case "logout":
+                        break;
+                    case"signup":
+                        break;
+                    case"create_game":
+                        break;
+                    case"play":
+                        break;
+                    case "sendInvitation":
+                        break;
+                    case "acceptinvetation":
+                        break;
+                    case "finish_game":
+                        break;
+                    case "client_close":
+                        break;
+                    case "client_close_while_playing":
+                        break;
+                    case "getonlineplayers":
+                        break;
+                    case "getofflineplayers":
+                        break;
+                    case "request_record":
+                        break;
 
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
     public void close(DataInputStream reader, DataOutputStream writer ){
         //so need to give client feed back on his own gui that server is down
         //and also send to all clients that server is closed
@@ -47,11 +93,25 @@ public class ClientConnectedHandler extends Thread {
         response.addProperty("type","Server Closed");
         clients.forEach(client-> {
             try {
-                client.dataOutputStream.writeUTF(response.toString());
+                 client.dataOutputStream.writeUTF(response.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                 e.printStackTrace();
             }
         });
 
     }
+    public Player login(){
+        Player player = new Player();
+        return player ;
+    }
+    public Player logout(){
+        Player player = new Player();
+        return player ;
+    }
+    public Player signup(){
+        Player player = new Player();
+        return player ;
+    }
+
+
 }
