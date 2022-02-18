@@ -53,14 +53,46 @@ public class ClientConnectedHandler extends Thread {
                 //-------------------------------------------------------------------
                 switch(type){
                     case "login":
+                        Player player = login(request);
+                        if(player == null){
+                            request.addProperty("type","login_response");
+                            request.addProperty("successful", "false");
+                            //this would get back to client to handle such error in log in
+                            this.dataOutputStream.writeUTF(request.toString());
+                        } else {
+                            request.addProperty("type","login_response");
+                            request.addProperty("successful", "true");
+                            request.addProperty("id", player.getId());
+                            request.addProperty("username", player.getUsername());
+                            request.addProperty("score", player.getScore());
+                            request.addProperty("wins", player.getWins());
+                            request.addProperty("losses", player.getLosses());
+                            //once player logged in add it in hashmap
+                            //it would be needed in (invitation, game , chat )
+                            players.put(player.getId(),this);
+                            //you gonna need it in deleting from players by id
+                            this.clientConnectedID = player.getId();
+                            clients.add(this);
+                            dataOutputStream.writeUTF(request.toString());
+                            //updateList(request);
+                        }
                         break;
                     case "logout":
+                        clients.remove(this);
+                        players.remove(this.clientConnectedID);
                         break;
-                    case"signup":
+                    case "signup":
+                        if(signup(request)) {
+                            response.addProperty("successful", "true");
+                            this.dataOutputStream.writeUTF(response.toString());
+                        }else {
+                            response.addProperty("successful", "false");
+                            this.dataOutputStream.writeUTF(response.toString());
+                        }
                         break;
-                    case"create_game":
+                    case "create_game":
                         break;
-                    case"play":
+                    case "play":
                         break;
                     case "sendInvitation":
                         break;
@@ -78,14 +110,13 @@ public class ClientConnectedHandler extends Thread {
                         break;
                     case "request_record":
                         break;
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
+
     public void close(DataInputStream reader, DataOutputStream writer ){
         //so need to give client feed back on his own gui that server is down
         //and also send to all clients that server is closed
@@ -100,17 +131,19 @@ public class ClientConnectedHandler extends Thread {
         });
 
     }
-    public Player login(){
+    public Player login(JsonObject request){
         Player player = new Player();
         return player ;
     }
-    public Player logout(){
+    public Player logout(JsonObject request){
         Player player = new Player();
         return player ;
     }
-    public Player signup(){
+    public boolean signup(JsonObject request){
+        String userName = request.get("username").toString();
+        String password = request.get("password").toString();
         Player player = new Player();
-        return player ;
+        return player.signUp(userName,password ) ;
     }
 
 

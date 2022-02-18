@@ -24,7 +24,7 @@ public class Server extends Thread{
                         System.out.println( "Server has been started  ");
                         socket = serverSocket.accept();
                         System.out.println("client connected on port "+socket.getLocalPort());
-                        // new ClientConnected(socket);
+                        new ClientConnectedHandler(socket);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
