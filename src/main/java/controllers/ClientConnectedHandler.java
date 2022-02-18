@@ -70,7 +70,6 @@ public class ClientConnectedHandler extends Thread {
                             // to each player in clients  connected now to server
                             //to update list of online players at client gui
                             updateList(response) ;
-
                         }
                         break;
                     case "logout":
@@ -80,9 +79,11 @@ public class ClientConnectedHandler extends Thread {
                         break;
                     case "signup":
                         if(signup(request)) {
+                            response.addProperty("type","signup_response");
                             response.addProperty("successful", "true");
                             this.dataOutputStream.writeUTF(response.toString());
                         }else {
+                            response.addProperty("type","signup_response");
                             response.addProperty("successful", "false");
                             this.dataOutputStream.writeUTF(response.toString());
                         }
@@ -188,3 +189,16 @@ public class ClientConnectedHandler extends Thread {
     }
 
 }
+//response types which shall be handled in client side
+// "type","login_response" -> "successful", "false" || "successful", "true"
+// "type","update-list" ->  "offline_players",new_offline_players_json_array && "online_players",new_online_players_json_array
+// "type","signup_response" -> "successful", "false" || "successful", "true"
+//
+//
+//
+//
+//
+//
+//
+//
+//
