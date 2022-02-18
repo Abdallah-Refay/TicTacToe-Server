@@ -8,7 +8,7 @@ class ConnectDB {
 
     public Connection getConnection() throws SQLException {
         //database uploaded on AWS EC2 instance
-        return DriverManager.getConnection("jdbc:mysql://18.159.211.138:3306/xo_db", "sambo", "Sambo@123");
+        return DriverManager.getConnection("jdbc:mysql://19.169.201.198:3306/xo_db", "mohamed", "mohamed@123");
     }
 
 }
