@@ -49,19 +49,24 @@ public class ClientConnectedHandler extends Thread {
                 String type = request.get("type").getAsString();
                 JsonObject response = new JsonObject();
                 ClientConnectedHandler opponent ;
-                int opponentId ;
+                int opponentID ;
                 Game game ;
                 //-------------------------------------------------------------------
                 switch(type){
                     case "login":
                         Player player = login(request);
                         if(player == null){
-                            response.addProperty("type","login_response");
+                            response.addProperty("type","loginresponse");
                             response.addProperty("successful", "false");
                             this.dataOutputStream.writeUTF(response.toString()); //this would get back to client to handle such error in log in
                         } else {
-                            response.addProperty("type","login_response");
+                            response.addProperty("type","loginresponse");
                             response.addProperty("successful", "true");
+                            response.addProperty("id", player.getId());
+                            response.addProperty("username", player.getUsername());
+                            response.addProperty("score", player.getScore());
+                            response.addProperty("wins", player.getWins());
+                            response.addProperty("losses", player.getLosses());
                             players.put(player.getId(),this); //once player logged in add it in hashmap //it would be needed in (invitation, game , chat )
                             this.clientConnectedID = player.getId();//you are going to need it in later deleting from players by id in case of log out
                             clients.add(this);
@@ -79,23 +84,67 @@ public class ClientConnectedHandler extends Thread {
                         break;
                     case "signup":
                         if(signup(request)) {
-                            response.addProperty("type","signup_response");
+                            response.addProperty("type","signupresponse");
                             response.addProperty("successful", "true");
                             this.dataOutputStream.writeUTF(response.toString());
                         }else {
-                            response.addProperty("type","signup_response");
+                            response.addProperty("type","signupresponse");
                             response.addProperty("successful", "false");
                             this.dataOutputStream.writeUTF(response.toString());
                         }
                         break;
                     case "create_game":
+                        game  = createGame();
+                        response.addProperty("game_id", game.getId());//returned for client game id
                         break;
                     case "play":
                         break;
+
+                    //----------------------------------------------------------------------------------
+//                  case "move":
+//                        GameRecord gameRecord = move(requestObject);
+//                        if(gameRecord == null) {
+//                            responseObject.addProperty("successful", "false");
+//                            //send responseObject to client
+//                        } else {
+//                            responseObject.addProperty("successful", "true");
+//                            responseObject.addProperty("game_id", gameRecord.getGameID());
+//                            responseObject.addProperty("player_x_id", gameRecord.getPlayerXID());
+//                            responseObject.addProperty("player_o_id", gameRecord.getPlayerOID());
+//                            responseObject.addProperty("step_number", gameRecord.getStepNumber());
+//                            responseObject.addProperty("step", Arrays.toString(gameRecord.getStep()));
+//                            //send responseObject to client
+//                        }
+//                        break;
+                    //-----------------------------------------------------------------------------------
+
+                    // send invitation and accept invitation are going align with each other
                     case "sendInvitation":
+                        //this request object comes from client side
+                        int senderId=Integer.parseInt(request.get("senderplayerid").getAsString());
+                        String senderUsername=request.get("senderusername").getAsString();
+                        int senderScore=request.get("senderscore").getAsInt();
+                        int receiverId=Integer.parseInt(request.get("sendtoid").getAsString());
+                        game = createGame();
+                        request.addProperty("game_id", game.getId());
+                        request.addProperty("type","invitationreceived");
+                        request.addProperty("sender",senderId);
+                        request.addProperty("opponentusername",senderUsername);
+                        request.addProperty("opponentsscore",senderScore);
+                        ClientConnectedHandler receiverhandler=players.get(receiverId);
+                        receiverhandler.dataOutputStream.writeUTF(response.toString());
                         break;
                     case "acceptinvetation":
+                        int accepterId=Integer.parseInt(request.get("accepter").getAsString());
+                        int acceptedId=Integer.parseInt(request.get("accepted").getAsString());
+                        int acceptedGameID=request.get("game_id").getAsInt();
+                        request.addProperty("type","yourinvetationaccepted");
+                        request.addProperty("game_id",acceptedGameID);
+                        request.addProperty("whoaccepted",accepterId);
+                        ClientConnectedHandler acceptedhandler=players.get(acceptedId);
+                        acceptedhandler.dataOutputStream.writeUTF(response.toString());
                         break;
+                        //------------------------------------------------------------------------------------
                     case "finish_game":
                         break;
                     case "client_close":
@@ -187,7 +236,9 @@ public class ClientConnectedHandler extends Thread {
         }
 
     }
-
+    private Game createGame(){
+        return new Game().create();
+    }
 }
 //response types which shall be handled in client side
 // "type","login_response" -> "successful", "false" || "successful", "true"

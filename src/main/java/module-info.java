@@ -4,6 +4,7 @@ module server {
     requires java.sql;
     requires org.kordamp.bootstrapfx.core;
     requires com.google.gson;
-    opens com.example.server to javafx.fxml;
-    exports com.example.server;
+    opens server_ui to javafx.graphics;
+    opens server_ui.resources to javafx.graphics;
+
 }
