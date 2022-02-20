@@ -22,9 +22,11 @@ public class Server extends Thread{
                 while (!serverSocket.isClosed()) {
                     try {
                         System.out.println( "Server has been started  ");
+                        //each client connect
                         socket = serverSocket.accept();
                         System.out.println("client connected on port "+socket.getLocalPort());
-                        new ClientConnectedHandler(socket);
+                        new ServerHandler(socket);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -48,6 +50,7 @@ public class Server extends Thread{
             }
         }
     }
+
     public static void main(String[] args){
         new Server();
     }
