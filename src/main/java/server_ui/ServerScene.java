@@ -100,7 +100,7 @@ public class ServerScene extends Application {
         title.setPrefHeight(58.0);
         title.setPrefWidth(374.0);
         title.getStyleClass().add("logo");
-        title.setText("Server Side");
+        title.setText("TIC TAC TOE");
         title.setTextFill(javafx.scene.paint.Color.valueOf("#dbe2e5"));
         title.setFont(new Font("System Bold Italic", 30.0));
         table.setMaxSize(350, 200);
@@ -152,7 +152,26 @@ public class ServerScene extends Application {
 
         });
     }
-
+    /* public ObservableList<Player> getAllUsers() {
+        //creating list of all players on system
+        ObservableList<Player> list = FXCollections.observableArrayList();
+        // get user bring observable list
+        Player player1 = new Player();
+        List<Player> players = player1.findAllPlayers();
+        for (Player player : players) {
+            list.add(player);
+        }
+        return list;
+    }*/
+    /*public void startServerBtnHandler(EventHandler<ActionEvent> Action) {
+        startServerBtn.setOnAction(Action);
+    }
+    public void stopServerBtnHandler(EventHandler<ActionEvent> Action) {
+        stopServerBtn.setOnAction(Action);
+    }
+    public void refreshServerBtnHandler(EventHandler<ActionEvent> Action) {
+        refreshServerBtn.setOnAction(Action);
+    }*/
     public static void main(String[] args) {
         launch(args);
     }
