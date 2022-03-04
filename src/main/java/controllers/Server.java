@@ -14,7 +14,7 @@ public class Server extends Thread{
     //opening server and waiting for clients connection
     public static void open(){
         try {
-            serverSocket = new ServerSocket(5001);
+            serverSocket = new ServerSocket(1080);
             //when server is initialized always listen to incoming client connection in thread
             //we made a thread to make that server app does not stop infinitely to accept client connection at each time
             //making this thread in constructor of server to be called once server object created at initializing of server app
