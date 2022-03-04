@@ -158,6 +158,27 @@ public class ServerHandler extends Thread {
                         finishGame(requestObject);
                         updateList(responseObject);
                         break;
+                    case "sendmessageforone":
+                        String senderusername = requestObject.get("senderusername").toString();
+                        System.out.println(requestObject.get("recieverid"));
+                        int recieverID = Integer.parseInt(String.valueOf(requestObject.get("recieverid")));
+                        ServerHandler receiverHandler= players.get(recieverID) ;//opponent socket
+                        String msg = requestObject.get("message").toString();
+                        responseObject = new JsonObject();
+                        responseObject.addProperty("type","receivemessagefromone");
+                        responseObject.addProperty("message",msg);
+                        responseObject.addProperty("senderusername",senderusername);
+                        receiverHandler.dataOutputStream.writeUTF(responseObject.toString());
+                        break;
+                    case "sendmessageforall":
+                        String name = requestObject.get("username").toString();
+                        String massege = requestObject.get("message").toString();
+                        responseObject = new JsonObject();
+                        responseObject.addProperty("type","allreceivemessagefromone");
+                        responseObject.addProperty("senderusername",name);
+                        responseObject.addProperty("message",massege);
+                        sendMsgToAll(responseObject);
+                        break;
                     //---------------------------------------------------------------------------------------------
                     case "client_close":
                         String closingClientusername=requestObject.get("username").getAsString();
@@ -391,6 +412,14 @@ public class ServerHandler extends Thread {
             e.printStackTrace();
         }
     }
-
+    public void sendMsgToAll(JsonObject responseObject){
+        clients.forEach(client-> {
+            try {
+                client.dataOutputStream.writeUTF(responseObject.toString());
+            } catch (IOException e) {
+                System.out.println("client closed ");
+            }
+        });
+    }
 
 }

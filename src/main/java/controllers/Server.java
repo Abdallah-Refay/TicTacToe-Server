@@ -8,7 +8,7 @@ public class Server extends Thread{
     private static ServerSocket serverSocket;
     static Thread th ;
     public Server() {
-        System.out.println("Starting el server  ");
+        System.out.println("Starting The Server  ");
         open() ;
     }
     //opening server and waiting for clients connection
