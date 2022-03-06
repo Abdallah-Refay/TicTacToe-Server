@@ -73,7 +73,7 @@ public class Player {
         boolean isAdded = false;        // check on added or not in database
         if (!(checkUserName(username))) {
             ConnectDB connectDB = new ConnectDB();
-            String sql = "insert into players (username, password) values (?, ?)";
+            String sql = "insert into players (username, hashedPassword) values (?, ?)";
             try (Connection con = connectDB.getConnection(); PreparedStatement st = con.prepareStatement(sql);) {
                 st.setString(1, username);
                 st.setString(2, hashedPassword);
@@ -110,12 +110,36 @@ public class Player {
 
         return player;
     }
+    public Player findID(int id) {
+        ConnectDB connectDB = new ConnectDB();
+        String sql = "select * from players where player_id = ?";
+        Player player = null;
+        try (Connection con = connectDB.getConnection(); PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, String.valueOf(id));
+            ResultSet rs = st.executeQuery();
+            player = new Player();
+            while (rs.next()) {
+                player.setId(Integer.parseInt(rs.getString(1)));        //id
+                player.setUsername(rs.getString(2));        //username
+                player.setHashedPassword(rs.getString(3)); //pw
+                player.setWins(rs.getInt(4));              //wins
+                player.setLosses(rs.getInt(5));            //losses
+                player.setScore(rs.getInt(6));             //score
+                player.setOnline(rs.getBoolean(7));        //online
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return player;
+    }
     //login by username and password
     public Player login(String username, String hashedPassword) {
         Player player = new Player();
-        player = player.findByUsername(username);
+        player = player.findByUsername(this.username);
         if(player != null) {
-            if(hashedPassword.equals(player.getHashedPassword())) {
+            if(this.hashedPassword.equals(player.getHashedPassword())) {
                 player.setOnline(true);
                 player.save(player);
             } else {
@@ -124,6 +148,7 @@ public class Player {
         }
         return player;
     }
+
     //logout from application so offline state
     public void logout(String username) {
         Player player = new Player();
@@ -153,15 +178,16 @@ public class Player {
     }
     public void save(Player player) {
         ConnectDB connectDB = new ConnectDB();
-        String sql = "update players set username = ?, hashedPassword = ?, wins = ?, loses = ?, score = ?, online = ? where player_id = ?";
+        String sql = "update players set  username = ?, hashedPassword = ?, wins = ?, losses = ?, score = ?, online = ? where player_id = ?";
         try (Connection con = connectDB.getConnection(); PreparedStatement st = con.prepareStatement(sql);) {
-            st.setInt(1, player.getId());
-            st.setString(2, player.getUsername());
-            st.setString(3, player.getHashedPassword());
-            st.setInt(4, player.getWins());
-            st.setInt(5, player.getLosses());
-            st.setInt(6, player.getScore());
-            st.setBoolean(7, player.isOnline());
+            // st.setInt(1, player.getId());
+            st.setString(1, player.getUsername());
+            st.setString(2, player.getHashedPassword());
+            st.setInt(3, player.getWins());
+            st.setInt(4, player.getLosses());
+            st.setInt(5, player.getScore());
+            st.setBoolean(6, player.isOnline());
+            st.setInt(7, player.getId());
             st.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -245,7 +271,6 @@ public class Player {
 
 
     }
-    //get all users from database to display on gui
     public static ObservableList<Player> getAllUsers() {
         //creating list of all players on system
         ObservableList<Player> list = FXCollections.observableArrayList();
