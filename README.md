@@ -4,7 +4,7 @@
 <img src="src/main/Java/server_ui/resources/logo.png" alt="Icon" width="250" />
 
 
-**Server side repo :** https://github.com/Abdallah-Refay/TicTacToe-Client.git
+**Client side repo :** https://github.com/Abdallah-Refay/TicTacToe-Client.git
 </br></br>
 
 # Key Featuers :- # 
