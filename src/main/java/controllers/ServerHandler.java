@@ -7,7 +7,6 @@ import Models.Player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -287,11 +286,7 @@ public class ServerHandler extends Thread {
                         int comesfromID = Integer.parseInt(requestObject.get("accepter").toString());
                         int sendtoID = Integer.parseInt(requestObject.get("accepted").toString());
                         int gameId1 = Integer.parseInt(requestObject.get("game_id").toString());
-                        // String case1 =  requestObject.get("status").toString() ;
-                        // boolean status ;
-                        // if(case1 == "true")  status = true ;
-                        // else  status = false ;
-                        // System.out.println("*************" + status);
+
                         ServerHandler sendToplayer = players.get(sendtoID);
                         JsonObject response1 = new JsonObject();
                         response1.addProperty("type", "pauseAcceptanceState");
